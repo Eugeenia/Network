@@ -110,8 +110,3 @@ def get_type(kind):
 
 to_send = make_request()
 smtp('smtp.yandex.ru', 465, to_send)
-
-
-
-
-# data = ssl_sock.send(b'')
