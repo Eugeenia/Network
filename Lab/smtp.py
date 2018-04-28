@@ -70,7 +70,7 @@ def encode_attachment_to_base64(directory, atttachment):
 def parse_files(directory):
     config_file = os.path.join(directory, CONFIG_FILE)
     text_file = os.path.join(directory, TEXT_FILE)
-    with open(config_file, 'r') as conf:
+    with open(config_file, 'r', encoding='utf-8') as conf:
         recievers = conf.readline()[4:]
         recievers = recievers.split()
         print(recievers)
@@ -79,7 +79,7 @@ def parse_files(directory):
         print(attachments)
         attachments = attachments.split()
         print(attachments)
-    with open(text_file, 'r') as text_file:
+    with open(text_file, 'r', encoding='utf-8') as text_file:
         text = text_file.read()
     return recievers, subject, attachments, text
 
