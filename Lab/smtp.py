@@ -62,7 +62,7 @@ def make_letter(login, name, recievers, subject, text, attachments, directory):
 
 
 def encode_attachment_to_base64(directory, atttachment):
-    file = directory + atttachment
+    file = directory + '\\' + atttachment
     with open(file, 'rb') as a:
         return base64.b64encode(a.read()).decode()
 
