@@ -34,6 +34,13 @@ def make_letter(login, name, recievers, subject, text, attachments, directory):
         letter += 'To: {}\n'.format(recv)
     letter += 'Subject: =?UTF-8?B?{}?=\n'.format(base64.b64encode(subject.encode()).decode())
     boundary = 'boundaryText'
+        
+        while True:
+        if boundary not in text:
+            break
+        else:
+            boundary =+ random.randint(99)
+
     if attachments:
         letter += 'Content-Type: multipart/mixed; boundary={};\n\n'.format(boundary)
         if text:
