@@ -41,6 +41,9 @@ def make_letter(login, name, recievers, subject, text, attachments, directory):
         else:
             boundary =+ random.randint(99)
 
+    if '\n.\n' in text:
+        text.replace('\n.\n', '\n..\n')    
+        
     if attachments:
         letter += 'Content-Type: multipart/mixed; boundary={};\n\n'.format(boundary)
         if text:
