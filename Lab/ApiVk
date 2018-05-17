@@ -1,6 +1,4 @@
-import socket
 import requests
-import re
 import time
 
 class Api:
@@ -8,33 +6,29 @@ class Api:
         self.token = input('Input your token: ')
 
     def make_request(self, method):
-        req = requests.get('https://api.vk.com/method/{}?access_token={}&v=5.74'.format(method, self.token))
-        return req.text
+        req = requests.get(f'https://api.vk.com/method/{method}?access_token={self.token}&v=5.74')
+        return req.json()
 
     def get_friends(self, method):
-        string = self.make_request(method)
-        friends = self.get_list(string)[1:]
+        answer = self.make_request(method)
+        try:
+            friends = answer['response']['items']
+            print(f'Friends: {friends}')
+        except KeyError:
+            return
         return friends
-
-    def get_list(self, resp):
-        resp = re.findall(r'[0-9]*', resp)
-        # print(resp)
-        list_ = []
-        for f in resp:
-            if f:
-                list_.append(f)
-        return list_
 
     def get_mutual_friends(self, method):
         mutual = dict()
         friends = self.get_friends(method)
-        mut = []
         for f in friends:
-            if f:
-                m = requests.get('https://api.vk.com/method/{}?access_token={}&target_uid={}&v=5.74'.
-                                 format('friends.getMutual', self.token, f))
-                time.sleep(1)
-                mutual[f] = self.get_list(m.text)
+            m = requests.get(f'https://api.vk.com/method/friends.getMutual?access_token={self.token}&target_uid={f}&v=5.74').json()
+            print(f'M: {m}')
+            time.sleep(1)
+            try:
+                mutual[f] = m['response']
+            except KeyError:
+                continue
         return mutual
 
     def get_most(self, method):
@@ -45,15 +39,12 @@ class Api:
             if len(friends[key]) > maximum:
                 maximum = len(friends[key])
                 most = key
-        most = requests.get('https://api.vk.com/method/{}?user_ids={}&access_token={}&v=5.74'.
-                            format('users.get', most, self.token)).text
-        most_ = re.findall(r'([А-Яа-яёЁ]*)', most)
-        friend = ''
-        for f in most_:
-            if f:
-                friend += f + ' '
+        most = requests.get(f'https://api.vk.com/method/users.get?user_ids={most}&access_token={self.token}&v=5.74').json()
+        print(f'most::{most}')
+        friend = most['response'][0]['first_name'] + ' ' + most['response'][0]['last_name']
         return friend, maximum
 
 
 a = Api()
-print('Most: {}'.format(a.get_most('friends.get')))
+name, count = a.get_most('friends.get')
+print(f'Most: {name}\nNumber of mutual friends: {count}')
